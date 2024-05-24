@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "target": "ESNext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "outDir": "./dist",
+      "declaration": true,
+      "declarationDir": "./dist",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true
+    },
+    "include": ["src/**/*.ts", "tests/cucumber/**/*.ts", "src/**/*.mts"]
+  }
