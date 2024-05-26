@@ -4,14 +4,14 @@ import path from 'path';
 /**
  * Reads a JSON file and parses its content.
  * @param {string} filePath - The path to the JSON file.
- * @returns {Promise<any>} - A promise that resolves to the parsed JSON content.
+ * @returns {Promise<T>} - A promise that resolves to the parsed JSON content.
  * @throws {Error} - Throws an error if the file is not found.
  */
-export async function readJsonFile(filePath: string): Promise<any> {
+export async function readJsonFile<T>(filePath: string): Promise<T> {
   try {
     await fs.access(filePath);
     const data = await fs.readFile(filePath, 'utf-8');
-    return JSON.parse(data);
+    return JSON.parse(data) as T;
   } catch (error) {
     throw new Error(`File not found: ${filePath}`);
   }
@@ -87,4 +87,12 @@ export async function waitForFile(filePath: string, timeout: number = 20000, int
     };
     checkFile();
   });
+}
+
+export async function directoryExists(dir: string): Promise<boolean> {
+  return fs.access(dir).then(() => true).catch(() => false);
+}
+
+export async function fileExists(filePath: string): Promise<boolean> {
+  return fs.access(filePath).then(() => true).catch(() => false);
 }

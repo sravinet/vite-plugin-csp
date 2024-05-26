@@ -6,7 +6,7 @@
  * @param {Set<string>} externalUrls - Set of external URLs.
  * @returns {string} - The generated CSP header string.
  */
-export function generateCspHeader(assets: string[], externalUrls: Set<string>): string {
+export function generateCspHeader(assets: Set<string>, externalUrls: Set<string>): string {
   const scriptSrc: string[] = ["'self'"];
   const styleSrc: string[] = ["'self'"];
   const imgSrc: string[] = ["'self'", "data:"];

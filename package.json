@@ -1,5 +1,5 @@
 {
-	"name": "my-vite-plugin",
+	"name": "vite-plugin-csp",
 	"version": "1.0.0",
 	"description": "A Vite plugin for ...",
 	"main": "dist/index.js",
@@ -9,20 +9,23 @@
 	"scripts": {
 		"build": "tsup src/index.mts --format cjs,esm --dts",
 		"xxtest:cucumber": "cucumber-js -p default -r ts-node/register/transpile-only --config cucumber.mjs",
-		"test:cucumber": "cucumber-js -p default"
+		"test:cucumber": "cucumber-js -p default",
+		"test": "vitest"
 	},
 	"keywords": [
 		"vite",
-		"plugin"
+		"plugin",
+		"rollup-plugin",
+		"vite-plugin" 
 	],
 	"author": "Your Name",
 	"license": "MIT",
 	"devDependencies": {
-		"@cucumber/cucumber": "^10.7.0",
+		"@cucumber/cucumber": "^10.8.0",
 		"@types/node": "^20.12.12",
 		"ts-node": "^10.9.2",
-		"tsup": "^5.0.0",
-		"typescript": "^4.9.5",
+		"tsup": "^8.0.2",
+		"typescript": "^5.4.5",
 		"vitest": "^1.6.0"
 	},
 	"dependencies": {
