@@ -126,17 +126,24 @@ export default function cspPlugin(options: {
   waitForManifests?: boolean
   printRemovedUrls?: boolean
 }): Plugin {
+  let remixManifest: RemixManifest
+  let clientManifest: ClientManifest
+  let translationDir: string
+  let clientJSDir: string
+  let allowedDomains: string[]
+  let allowedUrls: string[]
+  let printRemovedUrls: boolean
+
   return {
     name: 'vite-plugin-csp',
     async buildStart() {
       const {
         remixManifestPath,
         clientManifestPath,
-        translationDir,
-        clientJSDir,
-        outputDir,
-        allowedDomains,
-        allowedUrls,
+        translationDir: transDir,
+        clientJSDir: jsDir,
+        allowedDomains: domains,
+        allowedUrls: urls,
         waitForManifests = false,
         printRemovedUrls = false
       } = options
@@ -145,9 +152,14 @@ export default function cspPlugin(options: {
         await Promise.all([waitForFile(remixManifestPath), waitForFile(clientManifestPath)])
       }
 
-      const remixManifest = await readJsonFile<RemixManifest>(remixManifestPath)
-      const clientManifest = await readJsonFile<ClientManifest>(clientManifestPath)
-
+      remixManifest = await readJsonFile<RemixManifest>(remixManifestPath)
+      clientManifest = await readJsonFile<ClientManifest>(clientManifestPath)
+      translationDir = transDir
+      clientJSDir = jsDir
+      allowedDomains = domains
+      allowedUrls = urls
+    },
+    async generateBundle() {
       const routeAssetMapper = new RouteAssetMapper(
         remixManifest,
         clientManifest,
@@ -159,22 +171,23 @@ export default function cspPlugin(options: {
 
       const routeAssets = await routeAssetMapper.mapRoutesToAssets()
 
-      if (printRemovedUrls) {
+      if (options.printRemovedUrls) {
         for (const [route, assets] of Object.entries(routeAssets)) {
           console.log(`Route: ${route}`)
           console.log(`Removed URLs: ${Array.from(assets.removedUrls).join(', ')}`)
         }
       }
 
-      await ensureDirectoryExists(outputDir)
-      await writeJsonFile(path.join(outputDir, 'route-assets.json'), routeAssets)
+      await ensureDirectoryExists(options.outputDir)
+      await writeJsonFile(path.join(options.outputDir, 'route-assets.json'), routeAssets)
 
       const allExternalUrls = Array.from(new Set(
         Object.values(routeAssets).flatMap(asset => Array.from(asset.externalUrls))
       ))
 
       const cspHeader = generateCspHeader(new Set(allExternalUrls), new Set(allowedDomains))
-      await writeJsonFile(path.join(outputDir, 'csp-header.json'), { 'Content-Security-Policy': cspHeader })
+      await writeJsonFile(path.join(options.outputDir, 'csp-header.json'), { 'Content-Security-Policy': cspHeader })
     }
   }
 }
+
