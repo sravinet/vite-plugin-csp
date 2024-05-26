@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from 'vitest';
-import { generateCspHeader } from '../../../src/utils/csp-utils.mjs';
+import { generateCspHeader } from '../../../src/utils/csp-utils.js';
 
 let assets: string[] = [];
 let externalUrls: Set<string> = new Set<string>();
@@ -18,7 +18,7 @@ Given('the following external URLs:', (dataTable: { rawTable: string[][] }) => {
 });
 
 When('I generate the CSP headers', () => {
-  cspHeader = generateCspHeader(assets, externalUrls);
+  cspHeader = generateCspHeader(new Set<string>(assets), externalUrls);
 });
 
 Then('the CSP headers should include:', (dataTable: { rawTable: string[][] }) => {
