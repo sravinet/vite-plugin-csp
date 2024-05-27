@@ -83,10 +83,11 @@ export class RouteAssetMapper {
    * @param {Set<string>} assets - The set of assets.
    * @param {Set<string>} externalUrls - The set of external URLs.
    * @param {Set<string>} removedUrls - The set of removed URLs.
+   * @param {string} [baseDir=__dirname] - The base directory for constructing file paths.
    */
-  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>) {
+  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = __dirname) {
     await Promise.all(Array.from(assets).map(async (asset) => {
-      const assetFullPath = path.join(__dirname, 'public', asset)
+      const assetFullPath = path.join(baseDir, asset)
       if (await fileExists(assetFullPath)) {
         const fileContent = await readJsonFile<string>(assetFullPath)
         const extractedUrls = Array.from(extractExternalUrls(fileContent))
