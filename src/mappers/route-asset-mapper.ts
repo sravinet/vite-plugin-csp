@@ -12,6 +12,15 @@ export class RouteAssetMapper {
   private allowedUrls: string[]
   private exemptUrls: Set<string> = new Set<string>()
 
+  /**
+   * @param {Object} params - The parameters for the constructor.
+   * @param {RemixManifest} params.remixManifest - The Remix manifest.
+   * @param {ClientManifest} params.clientManifest - The client manifest.
+   * @param {string} params.translationDir - The directory for translation files.
+   * @param {string} params.clientJSDir - The directory for client JS files.
+   * @param {string[]} params.allowedDomains - The list of allowed domains.
+   * @param {string[]} params.allowedUrls - The list of allowed URLs.
+   */
   constructor({
     remixManifest,
     clientManifest,
@@ -35,6 +44,10 @@ export class RouteAssetMapper {
     this.allowedUrls = allowedUrls
   }
 
+  /**
+   * Maps routes to their corresponding assets.
+   * @returns {Promise<Record<string, RouteAssets>>} - A promise that resolves to a record of route assets.
+   */
   async mapRoutesToAssets(): Promise<Record<string, RouteAssets>> {
     const routeAssets: Record<string, RouteAssets> = {}
 
@@ -60,20 +73,30 @@ export class RouteAssetMapper {
     return routeAssets
   }
 
+  /**
+   * Processes the assets to extract and filter URLs.
+   * @param {Set<string>} assets - The set of assets.
+   * @param {Set<string>} externalUrls - The set of external URLs.
+   * @param {Set<string>} removedUrls - The set of removed URLs.
+   */
   private async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>) {
     await Promise.all(Array.from(assets).map(async (asset) => {
       const assetFullPath = path.join(__dirname, 'public', asset)
       if (await fileExists(assetFullPath)) {
         const fileContent = await readJsonFile<string>(assetFullPath)
-        const extractedUrls = new Set(extractExternalUrls(fileContent))
-        const { keptUrls, removedUrls } = filterUrls(extractedUrls, this.exemptUrls, this.allowedDomains)
+        const extractedUrls = Array.from(extractExternalUrls(fileContent))
+        const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(extractedUrls, this.exemptUrls, this.allowedDomains)
         
         keptUrls.forEach(url => externalUrls.add(url))
-        removedUrls.forEach(url => removedUrls.add(url))
+        filteredRemovedUrls.forEach(url => removedUrls.add(url))
       }
     }))
   }
 
+  /**
+   * Processes translation files to extract exempt URLs.
+   * @param {string} dir - The directory containing translation files.
+   */
   private async processTranslationFiles(dir: string) {
     const files = await getAllFiles(dir, '.json')
     await Promise.all(files.map(async (filePath) => {
@@ -82,6 +105,12 @@ export class RouteAssetMapper {
     }))
   }
 
+  /**
+   * Collects assets for a given route file.
+   * @param {string} routeFile - The route file.
+   * @param {Set<string>} assets - The set of assets.
+   * @param {Set<string>} [processed=new Set<string>()] - The set of processed files.
+   */
   private collectAssets(routeFile: string, assets: Set<string>, processed: Set<string> = new Set<string>()) {
     if (processed.has(routeFile)) return
     processed.add(routeFile)
