@@ -89,10 +89,20 @@ export async function waitForFile(filePath: string, timeout: number = 20000, int
   });
 }
 
+/**
+ * Checks if a directory exists.
+ * @param {string} dir - The path to the directory.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the directory exists, otherwise false.
+ */
 export async function directoryExists(dir: string): Promise<boolean> {
   return fs.access(dir).then(() => true).catch(() => false);
 }
 
+/**
+ * Checks if a file exists.
+ * @param {string} filePath - The path to the file.
+ * @returns {Promise<boolean>} - A promise that resolves to true if the file exists, otherwise false.
+ */
 export async function fileExists(filePath: string): Promise<boolean> {
   return fs.access(filePath).then(() => true).catch(() => false);
 }

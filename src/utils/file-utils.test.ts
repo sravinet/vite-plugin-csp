@@ -19,7 +19,7 @@ describe('file-utils', () => {
   });
 
   describe('readJsonFile', () => {
-    it('should read and parse JSON file', async () => {
+    it('should read and parse JSON file', async (q) => {
       const filePath = 'test.json';
       const fileContent = '{"key": "value"}';
       (fs.access as any).mockResolvedValue(undefined);
