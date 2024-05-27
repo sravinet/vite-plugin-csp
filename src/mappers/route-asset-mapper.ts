@@ -66,8 +66,8 @@ export class RouteAssetMapper {
       const assetFullPath = path.join(__dirname, 'public', asset)
       if (await fileExists(assetFullPath)) {
         const fileContent = await fs.readFile(assetFullPath, 'utf-8')
-        const { filteredUrls, removedUrls: fileRemovedUrls } = filterUrls(new Set(extractExternalUrls(fileContent)), this.exemptUrls, this.allowedDomains, this.allowedUrls)
-        filteredUrls.forEach(url => externalUrls.add(url))
+        const { keptUrls, removedUrls: fileRemovedUrls } = filterUrls(new Set(extractExternalUrls(fileContent)), this.exemptUrls, this.allowedDomains, this.allowedUrls)
+        keptUrls.forEach(url => externalUrls.add(url))
         fileRemovedUrls.forEach(url => removedUrls.add(url))
       }
     }))
