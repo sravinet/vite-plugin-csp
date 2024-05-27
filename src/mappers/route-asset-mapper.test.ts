@@ -62,12 +62,14 @@ describe('RouteAssetMapper', () => {
     mockFileExists.mockResolvedValue(true);
     mockReadJsonFile.mockResolvedValue({ url: 'https://external.com/script.js' });
 
-    const routeAssets = await routeAssetMapper.mapRoutesToAssets()
+    const routeAssets = await routeAssetMapper.mapRoutesToAssets();
 
-    expect(routeAssets).toHaveProperty('route1')
-    expect(routeAssets.route1.assets).toContain('file1.js')
-    expect(routeAssets.route1.assets).toContain('file2.js')
-    expect(routeAssets.route1.externalUrls).toContain('https://external.com/script.js')
+    console.log(routeAssets); // Add this line to log the routeAssets for debugging
+
+    expect(routeAssets).toHaveProperty('route1');
+    expect(routeAssets.route1.assets).toContain('file1.js');
+    expect(routeAssets.route1.assets).toContain('file2.js');
+    expect(routeAssets.route1.externalUrls).toContain('https://external.com/script.js');
   })
 
   it('should handle missing asset files gracefully', async () => {
