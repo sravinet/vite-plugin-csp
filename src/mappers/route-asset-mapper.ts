@@ -81,12 +81,15 @@ export class RouteAssetMapper {
     }))
   }
 
-  private collectAssets(routeFile: string, assets: Set<string>) {
+  private collectAssets(routeFile: string, assets: Set<string>, processed: Set<string> = new Set<string>()) {
+    if (processed.has(routeFile)) return
+    processed.add(routeFile)
+
     for (const asset of Object.values(this.clientManifest)) {
       if (asset.src === routeFile || asset.imports?.includes(routeFile)) {
         assets.add(asset.file)
         if (asset.imports) {
-          asset.imports.forEach(imported => this.collectAssets(imported, assets))
+          asset.imports.forEach(imported => this.collectAssets(imported, assets, processed))
         }
       }
     }

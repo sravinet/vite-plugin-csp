@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest'
 import { RouteAssetMapper } from './route-asset-mapper'
 import { RemixManifest, ClientManifest } from '../interfaces'
 import { directoryExists, fileExists, getAllFiles, readJsonFile } from '../utils/file-utils'
@@ -14,9 +14,13 @@ vi.mock('../utils/file-utils', () => ({
   readJsonFile: vi.fn()
 }))
 
-vi.mock('fs/promises', () => ({
-  readFile: vi.fn()
-}))
+vi.mock('fs/promises', async (importOriginal) => {
+  const actual = (await importOriginal()) as Record<string, unknown>
+  return {
+    ...actual,
+    readFile: vi.fn()
+  }
+})
 
 const mockRemixManifest: RemixManifest = {
   routes: {
@@ -45,9 +49,9 @@ describe('RouteAssetMapper', () => {
   })
 
   it('should process translation files if directory exists', async () => {
-    (directoryExists as vi.Mock).mockResolvedValue(true)
-    (getAllFiles as vi.Mock).mockResolvedValue(['translations/file1.json'])
-    ;(fs.readFile as vi.Mock).mockResolvedValue('{"url": "https://example.com"}')
+    (directoryExists as Mock).mockResolvedValue(true)
+    (getAllFiles as Mock).mockResolvedValue(['translations/file1.json'])
+    (fs.readFile as Mock).mockResolvedValue('{"url": "https://example.com"}')
 
     await routeAssetMapper.mapRoutesToAssets()
 
@@ -57,9 +61,9 @@ describe('RouteAssetMapper', () => {
   })
 
   it('should map routes to assets correctly', async () => {
-    (directoryExists as vi.Mock).mockResolvedValue(false)
-    ;(fileExists as vi.Mock).mockResolvedValue(true)
-    ;(fs.readFile as vi.Mock).mockResolvedValue('import "https://external.com/script.js"')
+    (directoryExists as Mock).mockResolvedValue(false)
+    ;(fileExists as Mock).mockResolvedValue(true)
+    ;(fs.readFile as Mock).mockResolvedValue('import "https://external.com/script.js"')
 
     const routeAssets = await routeAssetMapper.mapRoutesToAssets()
 
@@ -70,8 +74,8 @@ describe('RouteAssetMapper', () => {
   })
 
   it('should handle missing asset files gracefully', async () => {
-    (directoryExists as vi.Mock).mockResolvedValue(false)
-    ;(fileExists as vi.Mock).mockResolvedValue(false)
+    (directoryExists as Mock).mockResolvedValue(false)
+    ;(fileExists as Mock).mockResolvedValue(false)
 
     const routeAssets = await routeAssetMapper.mapRoutesToAssets()
 
@@ -79,4 +83,4 @@ describe('RouteAssetMapper', () => {
     expect(routeAssets.route1.assets).toContain('file2.js')
     expect(routeAssets.route1.externalUrls.size).toBe(0)
   })
-});
+})
