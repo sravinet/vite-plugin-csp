@@ -1,16 +1,33 @@
+import { IsUrl, validateSync } from 'class-validator';
+
 /**
  * Extracts external URLs from the given file content.
  * 
  * @param {string} fileContent - The content of the file to extract URLs from.
  * @returns {Set<string>} - A set of extracted external URLs.
  */
-export function extractExternalUrls(fileContent: string): Set<string> {
-  const urlPattern = /https?:\/\/[^\s'"]+/g;
-  const urls = new Set<string>();
-  let match: RegExpExecArray | null;
-  while ((match = urlPattern.exec(fileContent)) !== null) {
-    urls.add(match[0]);
+
+class UrlValidator {
+  @IsUrl()
+  url: string;
+
+  constructor(url: string) {
+    this.url = url;
   }
+}
+
+export function extractExternalUrls(fileContent: string): Set<string> {
+  const urls = new Set<string>();
+  const words = fileContent.split(/\s+/);
+
+  words.forEach(word => {
+    const urlValidator = new UrlValidator(word);
+    const errors = validateSync(urlValidator);
+    if (errors.length === 0) {
+      urls.add(word);
+    }
+  });
+
   return urls;
 }
 
@@ -29,12 +46,17 @@ export function filterUrls(urls: string[], allowedDomains: string[] = [], allowe
   const allowedUrlsSet = new Set(allowedUrls);
 
   urls.forEach(url => {
+    try {
       const domain = new URL(url).hostname;
       if (allowedUrlsSet.has(url) || allowedDomainsSet.has(domain)) {
-          keptUrls.push(url);
+        keptUrls.push(url);
       } else {
-          removedUrls.push(url);
+        removedUrls.push(url);
       }
+    } catch (e) {
+      // Skip invalid URLs
+      removedUrls.push(url);
+    }
   });
 
   return { keptUrls, removedUrls };

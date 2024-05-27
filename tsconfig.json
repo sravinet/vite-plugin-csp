@@ -3,9 +3,12 @@
       "target": "ESNext",
       "module": "ESNext",
       "moduleResolution": "Node",
+      "types": ["node", "vitest"],
       "outDir": "./dist",
       "declaration": true,
       "declarationDir": "./dist",
+      "experimentalDecorators": true,
+      "emitDecoratorMetadata": true,
       "strict": true,
       "esModuleInterop": true,
       "skipLibCheck": true
