@@ -46,7 +46,7 @@ describe('RouteAssetMapper', () => {
     mockGetAllFiles.mockResolvedValue(['translations/file1.json']);
     mockReadJsonFile.mockResolvedValue({ url: 'https://example.com' });
 
-    await routeAssetMapper.mapRoutesToAssets()
+    await routeAssetMapper.mapRoutesToAssets('translations')
 
     expect(directoryExists).toHaveBeenCalledWith('translations')
     expect(getAllFiles).toHaveBeenCalledWith('translations', '.json')
@@ -62,7 +62,7 @@ describe('RouteAssetMapper', () => {
     mockFileExists.mockResolvedValue(true);
     mockReadJsonFile.mockResolvedValue({ url: 'https://external.com/script.js' });
 
-    const routeAssets = await routeAssetMapper.mapRoutesToAssets();
+    const routeAssets = await routeAssetMapper.mapRoutesToAssets('translations');
 
     console.log(routeAssets); // Add this line to log the routeAssets for debugging
 
@@ -79,7 +79,7 @@ describe('RouteAssetMapper', () => {
     mockDirectoryExists.mockResolvedValue(false);
     mockFileExists.mockResolvedValue(false);
 
-    const routeAssets = await routeAssetMapper.mapRoutesToAssets()
+    const routeAssets = await routeAssetMapper.mapRoutesToAssets('translations')
 
     expect(routeAssets.route1.assets).toContain('file1.js')
     expect(routeAssets.route1.assets).toContain('file2.js')

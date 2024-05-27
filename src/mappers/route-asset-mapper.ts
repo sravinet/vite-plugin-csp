@@ -46,13 +46,14 @@ export class RouteAssetMapper {
 
   /**
    * Maps routes to their corresponding assets.
+   * @param {string} [translationDir=this.translationDir] - The directory for translation files. Optional.
    * @returns {Promise<Record<string, RouteAssets>>} - A promise that resolves to a record of route assets.
    */
-  async mapRoutesToAssets(): Promise<Record<string, RouteAssets>> {
+  async mapRoutesToAssets(translationDir: string = this.translationDir): Promise<Record<string, RouteAssets>> {
     const routeAssets: Record<string, RouteAssets> = {}
 
-    if (await directoryExists(this.translationDir)) {
-      await this.processTranslationFiles(this.translationDir)
+    if (await directoryExists(translationDir)) {
+      await this.processTranslationFiles(translationDir)
     }
 
     await Promise.all(Object.entries(this.remixManifest.routes).map(async ([routeKey, routeValue]) => {
@@ -72,7 +73,6 @@ export class RouteAssetMapper {
 
     return routeAssets
   }
-
   /**
    * Processes the assets to extract and filter URLs.
    * @param {Set<string>} assets - The set of assets.
