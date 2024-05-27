@@ -88,7 +88,7 @@ export class RouteAssetMapper {
   public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = this.clientJSDir) {    const processedUrls = new Set<string>();
 
     const processUrls = (urls: string[]) => {
-      const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, Array.from(this.exemptUrls), this.allowedDomains);
+      const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, this.allowedDomains, this.allowedUrls);
       keptUrls.forEach(url => {
         if (!processedUrls.has(url)) {
           externalUrls.add(url);
