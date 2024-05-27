@@ -13,8 +13,8 @@ vi.mock('../utils/file-utils', () => ({
   readJsonFile: vi.fn()
 }))
 
-vi.mock('fs/promises', async (importOriginal) => {
-  const actual = (await importOriginal()) as Record<string, unknown>
+vi.mock('fs/promises', async () => {
+  const actual = await vi.importActual<typeof import('fs/promises')>('fs/promises');
   return {
     ...actual,
     readFile: vi.fn()
