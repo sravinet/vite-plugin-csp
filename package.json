@@ -16,19 +16,21 @@
 		"vite",
 		"plugin",
 		"rollup-plugin",
-		"vite-plugin" 
+		"vite-plugin"
 	],
 	"author": "Your Name",
 	"license": "MIT",
 	"devDependencies": {
 		"@cucumber/cucumber": "^10.8.0",
 		"@types/node": "^20.12.12",
+		"jsdom": "^24.1.0",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
 		"typescript": "^5.4.5",
 		"vitest": "^1.6.0"
 	},
 	"dependencies": {
+		"class-validator": "^0.14.1",
 		"fs": "0.0.1-security",
 		"vite": "^5.2.11"
 	}
