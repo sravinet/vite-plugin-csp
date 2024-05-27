@@ -16,11 +16,16 @@ class UrlValidator {
   }
 }
 
-export function extractExternalUrls(fileContent: string): Set<string> {
+export function extractExternalUrls(fileContent: any): Set<string> {
   const urls = new Set<string>();
+
+  if (typeof fileContent !== 'string') {
+    fileContent = String(fileContent);
+  }
+
   const words = fileContent.split(/\s+/);
 
-  words.forEach(word => {
+  words.forEach((word: string) => {
     const urlValidator = new UrlValidator(word);
     const errors = validateSync(urlValidator);
     if (errors.length === 0) {
