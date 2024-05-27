@@ -1,9 +1,7 @@
-/// <reference types="vitest" />
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest'
 import { RouteAssetMapper } from './route-asset-mapper'
 import { RemixManifest, ClientManifest } from '../interfaces'
 import { directoryExists, fileExists, getAllFiles, readJsonFile } from '../utils/file-utils'
-import fs from 'fs/promises'
 
 // Mock the utility functions
 vi.mock('../utils/file-utils', () => ({
@@ -12,14 +10,6 @@ vi.mock('../utils/file-utils', () => ({
   getAllFiles: vi.fn(),
   readJsonFile: vi.fn()
 }))
-
-vi.mock('fs/promises', async () => {
-  const actual = await vi.importActual<typeof import('fs/promises')>('fs/promises');
-  return {
-    ...actual,
-    readFile: vi.fn()
-  }
-})
 
 const mockRemixManifest: RemixManifest = {
   routes: {
@@ -50,26 +40,28 @@ describe('RouteAssetMapper', () => {
   it('should process translation files if directory exists', async () => {
     const mockDirectoryExists = directoryExists as MockedFunction<typeof directoryExists>;
     const mockGetAllFiles = getAllFiles as MockedFunction<typeof getAllFiles>;
-    const mockReadFile = fs.readFile as MockedFunction<typeof fs.readFile>;
+    const mockReadJsonFile = readJsonFile as MockedFunction<typeof readJsonFile>;
 
     mockDirectoryExists.mockResolvedValue(true);
     mockGetAllFiles.mockResolvedValue(['translations/file1.json']);
-    mockReadFile.mockResolvedValue('{"url": "https://example.com"}');
+    mockReadJsonFile.mockResolvedValue({ url: 'https://example.com' });
+
     await routeAssetMapper.mapRoutesToAssets()
 
     expect(directoryExists).toHaveBeenCalledWith('translations')
     expect(getAllFiles).toHaveBeenCalledWith('translations', '.json')
-    expect(fs.readFile).toHaveBeenCalledWith('translations/file1.json', 'utf-8')
+    expect(readJsonFile).toHaveBeenCalledWith('translations/file1.json')
   })
 
   it('should map routes to assets correctly', async () => {
     const mockDirectoryExists = directoryExists as MockedFunction<typeof directoryExists>;
     const mockFileExists = fileExists as MockedFunction<typeof fileExists>;
-    const mockReadFile = fs.readFile as MockedFunction<typeof fs.readFile>;
+    const mockReadJsonFile = readJsonFile as MockedFunction<typeof readJsonFile>;
 
     mockDirectoryExists.mockResolvedValue(false);
     mockFileExists.mockResolvedValue(true);
-    mockReadFile.mockResolvedValue('import "https://external.com/script.js"');
+    mockReadJsonFile.mockResolvedValue({ url: 'https://external.com/script.js' });
+
     const routeAssets = await routeAssetMapper.mapRoutesToAssets()
 
     expect(routeAssets).toHaveProperty('route1')
