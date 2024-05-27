@@ -26,49 +26,51 @@ describe('extractExternalUrls', () => {
 });
 
 describe('filterUrls', () => {
-    it('should filter URLs based on exempt URLs, allowed domains, and allowed URLs', () => {
-        const urls = new Set([
+    it('should filter URLs based on allowed domains and allowed URLs', () => {
+        const urls: Set<string> = new Set([
+            'https://example.com/page1', // kept
+            'http://another-example.com/page2', // removed
+            'https://allowed.com/page3', // kept
+            'https://notallowed.com/page4', // removed
+            'https://url.com/page5' // kept
+        ]);
+        const allowedDomains: Set<string> = new Set(['example.com', 'allowed.com']);
+        const allowedUrls: Set<string> = new Set(['https://url.com/page5']);
+
+        const { keptUrls, removedUrls } = filterUrls(urls, allowedDomains, allowedUrls);
+
+        const expectedFilteredUrls: Set<string> = new Set([
             'https://example.com/page1',
-            'http://another-example.com/page2',
             'https://allowed.com/page3',
+            'https://url.com/page5'
+        ]);
+        const expectedRemovedUrls: Set<string> = new Set([
+            'http://another-example.com/page2',
             'https://notallowed.com/page4'
         ]);
-        const exemptUrls = new Set(['https://notallowed.com/page4']);
-        const allowedDomains = ['example.com', 'allowed.com'];
-        const allowedUrls = ['http://another-example.com/page2'];
 
-        const { filteredUrls, removedUrls } = filterUrls(urls, exemptUrls, allowedDomains, allowedUrls);
-
-        const expectedFilteredUrls = new Set([
-            'https://example.com/page1',
-            'http://another-example.com/page2',
-            'https://allowed.com/page3',
-            'https://notallowed.com/page4'
-        ]);
-        const expectedRemovedUrls = new Set([]);
-
-        expect(filteredUrls).toEqual(expectedFilteredUrls);
+        expect(keptUrls).toEqual(expectedFilteredUrls);
         expect(removedUrls).toEqual(expectedRemovedUrls);
     });
 
     it('should remove URLs not in allowed domains or allowed URLs', () => {
-        const urls = new Set([
+        const urls: Set<string> = new Set([
             'https://example.com/page1',
             'http://another-example.com/page2',
             'https://notallowed.com/page4'
         ]);
-        const allowedDomains = ['example.com'];
-        const allowedUrls = [];
+        const allowedDomains: Set<string> = new Set(['example.com']);
+        const allowedUrls: Set<string> = new Set();
 
-        const { filteredUrls, removedUrls } = filterUrls(urls, new Set(), allowedDomains, allowedUrls);
+        const { keptUrls, removedUrls } = filterUrls(urls, allowedDomains, allowedUrls);
 
-        const expectedFilteredUrls = new Set(['https://example.com/page1']);
-        const expectedRemovedUrls = new Set([
+        const expectedFilteredUrls: Set<string> = new Set(['https://example.com/page1']);
+        const expectedRemovedUrls: Set<string> = new Set([
             'http://another-example.com/page2',
             'https://notallowed.com/page4'
         ]);
 
-        expect(filteredUrls).toEqual(expectedFilteredUrls);
+        expect(keptUrls).toEqual(expectedFilteredUrls);
         expect(removedUrls).toEqual(expectedRemovedUrls);
     });
 });

@@ -16,26 +16,25 @@ export function extractExternalUrls(fileContent: string): Set<string> {
 }
 
 /**
- * Filters URLs based on exempt URLs, allowed domains, and allowed URLs.
+ * Filters URLs based on allowed domains and allowed URLs.
  * 
  * @param {Set<string>} urls - The set of URLs to filter.
- * @param {Set<string>} [exemptUrls=new Set()] - The set of URLs to exempt from filtering. These URLs are always included in the filtered results.
- * @param {string[]} [allowedDomains=[]] - The list of allowed domains. URLs from these domains are included in the filtered results.
- * @param {string[]} [allowedUrls=[]] - The list of allowed URLs. These specific URLs are included in the filtered results.
+ * @param {Set<string>} [allowedDomains=new Set()] - The set of allowed domains. URLs from these domains are included in the filtered results.
+ * @param {Set<string>} [allowedUrls=new Set()] - The set of allowed URLs. These specific URLs are included in the filtered results.
  * @returns {{ filteredUrls: Set<string>, removedUrls: Set<string> }} - An object containing the filtered URLs and removed URLs.
  */
-export function filterUrls(urls: Set<string>, exemptUrls: Set<string> = new Set(), allowedDomains: string[] = [], allowedUrls: string[] = []): { filteredUrls: Set<string>, removedUrls: Set<string> } {
-    const filteredUrls = new Set<string>();
-    const removedUrls = new Set<string>();
+export function filterUrls(urls: Set<string>, allowedDomains: Set<string> = new Set(), allowedUrls: Set<string> = new Set()): { keptUrls: Set<string>, removedUrls: Set<string> } {
+  const keptUrls = new Set<string>();
+  const removedUrls = new Set<string>();
 
-    urls.forEach(url => {
-        const domain = new URL(url).hostname;
-        if (exemptUrls.has(url) || allowedUrls.includes(url) || allowedDomains.some(allowedDomain => domain.includes(allowedDomain))) {
-        filteredUrls.add(url);
-        } else {
-        removedUrls.add(url);
-        }
-    });
+  urls.forEach(url => {
+      const domain = new URL(url).hostname;
+      if (allowedUrls.has(url) || Array.from(allowedDomains).some(allowedDomain => domain === allowedDomain || domain.endsWith(`.${allowedDomain}`))) {
+          keptUrls.add(url);
+      } else {
+          removedUrls.add(url);
+      }
+  });
 
-    return { filteredUrls, removedUrls };
+  return { keptUrls, removedUrls };
 }
