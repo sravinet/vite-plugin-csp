@@ -33,7 +33,7 @@ describe('RouteAssetMapper', () => {
       translationDir: 'translations',
       clientJSDir: 'client-js',
       allowedDomains: ['example.com'],
-      allowedUrls: ['https://example.com']
+      allowedUrls: ['https://example.com', 'https://external.com/script.js']
     })
   })
 
@@ -52,6 +52,24 @@ describe('RouteAssetMapper', () => {
     expect(getAllFiles).toHaveBeenCalledWith('translations', '.json')
     expect(readJsonFile).toHaveBeenCalledWith('translations/file1.json')
   })
+
+  it('should process assets and extract external URLs correctly', async () => {
+    const mockFileExists = fileExists as MockedFunction<typeof fileExists>;
+    const mockReadJsonFile = readJsonFile as MockedFunction<typeof readJsonFile>;
+  
+    mockFileExists.mockResolvedValue(true);
+    mockReadJsonFile.mockResolvedValue(JSON.stringify({ url: 'https://external.com/script.js' }));
+  
+    const assets = new Set<string>(['file1.js']);
+    const externalUrls = new Set<string>();
+    const removedUrls = new Set<string>();
+  
+    await routeAssetMapper.processAssets(assets, externalUrls, removedUrls);
+  
+    expect(externalUrls).toContain('https://external.com/script.js');
+    expect(removedUrls.size).toBe(0);
+  });
+
 
   it('should map routes to assets correctly', async () => {
     const mockDirectoryExists = directoryExists as MockedFunction<typeof directoryExists>;

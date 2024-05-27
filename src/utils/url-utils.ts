@@ -20,10 +20,18 @@ export function extractExternalUrls(fileContent: any): Set<string> {
   const urls = new Set<string>();
 
   if (typeof fileContent !== 'string') {
-    fileContent = String(fileContent);
+    fileContent = JSON.stringify(fileContent);
   }
 
-  const words = fileContent.split(/\s+/);
+  // Parse JSON if the content is a JSON string
+  let parsedContent;
+  try {
+    parsedContent = JSON.parse(fileContent);
+  } catch (e) {
+    parsedContent = fileContent;
+  }
+
+  const words = typeof parsedContent === 'string' ? parsedContent.split(/\s+/) : Object.values(parsedContent).flat() as string[];
 
   words.forEach((word: string) => {
     const urlValidator = new UrlValidator(word);
@@ -35,7 +43,6 @@ export function extractExternalUrls(fileContent: any): Set<string> {
 
   return urls;
 }
-
 /**
  * Filters URLs based on allowed domains and allowed URLs.
  * 

@@ -101,51 +101,51 @@ export class RouteAssetMapper {
    * @param {string} [baseDir=__dirname] - The base directory for constructing file paths.
    */
   public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = this.clientJSDir) {
-  const processedUrls = new Set<string>();
-
-  const processUrls = (urls: string[]) => {
-    const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, this.allowedDomains, this.allowedUrls);
-    keptUrls.forEach(url => {
-      if (!processedUrls.has(url)) {
-        externalUrls.add(url);
-        processedUrls.add(url);
+    const processedUrls = new Set<string>();
+  
+    const processUrls = (urls: string[]) => {
+      const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, this.allowedDomains, this.allowedUrls);
+      keptUrls.forEach(url => {
+        if (!processedUrls.has(url)) {
+          externalUrls.add(url);
+          processedUrls.add(url);
+        }
+      });
+      filteredRemovedUrls.forEach(url => {
+        if (!processedUrls.has(url)) {
+          removedUrls.add(url);
+          processedUrls.add(url);
+        }
+      });
+    };
+  
+    for (const asset of assets) {
+      const assetFullPath = path.join(baseDir, asset);
+      try {
+        if (await fileExists(assetFullPath)) {
+          const fileContent = await readJsonFile<string>(assetFullPath);
+          const extractedUrls = Array.from(extractExternalUrls(fileContent));
+          processUrls(extractedUrls);
+        } else {
+          const extractedUrls = Array.from(extractExternalUrls(asset));
+          processUrls(extractedUrls);
+        }
+      } catch (error) {
+        console.error(`Error processing asset ${asset}:`, error);
       }
-    });
-    filteredRemovedUrls.forEach(url => {
-      if (!processedUrls.has(url)) {
-        removedUrls.add(url);
-        processedUrls.add(url);
-      }
-    });
-  };
-
-  for (const asset of assets) {
-    const assetFullPath = path.join(baseDir, asset);
-    try {
-      if (await fileExists(assetFullPath)) {
-        const fileContent = await readJsonFile<string>(assetFullPath);
-        const extractedUrls = Array.from(extractExternalUrls(fileContent));
-        processUrls(extractedUrls);
-      } else {
-        const extractedUrls = Array.from(extractExternalUrls(asset));
-        processUrls(extractedUrls);
-      }
-    } catch (error) {
-      console.error(`Error processing asset ${asset}:`, error);
     }
   }
-}
 
   /**
    * Processes translation files to extract exempt URLs.
    * @param {string} dir - The directory containing translation files.
    */
   public async processTranslationFiles(dir: string) {
-    const files = await getAllFiles(dir, '.json')
+    const files = await getAllFiles(dir, '.json');
     await Promise.all(files.map(async (filePath) => {
-      const fileContent = await readJsonFile<TranslationJson>(filePath)
-      extractExternalUrls(JSON.stringify(fileContent)).forEach(url => this.exemptUrls.add(url))
-    }))
+      const fileContent = await readJsonFile<TranslationJson>(filePath);
+      extractExternalUrls(JSON.stringify(fileContent)).forEach(url => this.exemptUrls.add(url));
+    }));
   }
 
   /**
