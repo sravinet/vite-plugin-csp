@@ -18,21 +18,23 @@ export function extractExternalUrls(fileContent: string): Set<string> {
 /**
  * Filters URLs based on allowed domains and allowed URLs.
  * 
- * @param {Set<string>} urls - The set of URLs to filter.
- * @param {Set<string>} [allowedDomains=new Set()] - The set of allowed domains. URLs from these domains are included in the filtered results.
- * @param {Set<string>} [allowedUrls=new Set()] - The set of allowed URLs. These specific URLs are included in the filtered results.
- * @returns {{ filteredUrls: Set<string>, removedUrls: Set<string> }} - An object containing the filtered URLs and removed URLs.
+ * @param {string[]} urls - The array of URLs to filter.
+ * @param {string[]} [allowedDomains=[]] - The array of allowed domains. URLs from these domains are included in the filtered results.
+ * @param {string[]} [allowedUrls=[]] - The array of allowed URLs. These specific URLs are included in the filtered results.
+ * @returns {{ keptUrls: string[], removedUrls: string[] }} - An object containing the filtered URLs and removed URLs.
  */
-export function filterUrls(urls: Set<string>, allowedDomains: Set<string> = new Set(), allowedUrls: Set<string> = new Set()): { keptUrls: Set<string>, removedUrls: Set<string> } {
-  const keptUrls = new Set<string>();
-  const removedUrls = new Set<string>();
+export function filterUrls(urls: string[], allowedDomains: string[] = [], allowedUrls: string[] = []): { keptUrls: string[], removedUrls: string[] } {
+  const keptUrls: string[] = [];
+  const removedUrls: string[] = [];
+  const allowedDomainsSet = new Set(allowedDomains);
+  const allowedUrlsSet = new Set(allowedUrls);
 
   urls.forEach(url => {
       const domain = new URL(url).hostname;
-      if (allowedUrls.has(url) || Array.from(allowedDomains).some(allowedDomain => domain === allowedDomain || domain.endsWith(`.${allowedDomain}`))) {
-          keptUrls.add(url);
+      if (allowedUrlsSet.has(url) || Array.from(allowedDomainsSet).some(allowedDomain => domain === allowedDomain || domain.endsWith(`.${allowedDomain}`))) {
+          keptUrls.push(url);
       } else {
-          removedUrls.add(url);
+          removedUrls.push(url);
       }
   });
 
