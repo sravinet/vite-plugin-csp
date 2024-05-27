@@ -7,13 +7,28 @@ import { RemixManifest, ClientManifest, RouteAssets, TranslationJson } from '../
  * Class representing a mapper for route assets.
  */
 export class RouteAssetMapper {
+  // The Remix manifest containing route information
   private remixManifest: RemixManifest
+  
+  // The client manifest containing client-side assets
   private clientManifest: ClientManifest
+  
+  // Directory path for translation files
   private translationDir: string
+  
+  // Directory path for client JavaScript files
   private clientJSDir: string
+  
+  // List of allowed domains for external resources
   private allowedDomains: string[]
+  
+  // List of allowed URLs for external resources
   private allowedUrls: string[]
+  
+  // Set of URLs that are exempt from filtering
   private exemptUrls: Set<string> = new Set<string>()
+
+  // wjha
 
   /**
    * Creates an instance of RouteAssetMapper.
@@ -85,41 +100,41 @@ export class RouteAssetMapper {
    * @param {Set<string>} removedUrls - The set of removed URLs.
    * @param {string} [baseDir=__dirname] - The base directory for constructing file paths.
    */
-  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = this.clientJSDir) {    const processedUrls = new Set<string>();
+  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = this.clientJSDir) {
+  const processedUrls = new Set<string>();
 
-    const processUrls = (urls: string[]) => {
-      const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, this.allowedDomains, this.allowedUrls);
-      keptUrls.forEach(url => {
-        if (!processedUrls.has(url)) {
-          externalUrls.add(url);
-          processedUrls.add(url);
-        }
-      });
-      filteredRemovedUrls.forEach(url => {
-        if (!processedUrls.has(url)) {
-          removedUrls.add(url);
-          processedUrls.add(url);
-        }
-      });
-    };
-
-    for (const asset of assets) {
-      const assetFullPath = path.join(baseDir, asset);
-      try {
-        if (await fileExists(assetFullPath)) {
-          const fileContent = await readJsonFile<string>(assetFullPath);
-          const extractedUrls = Array.from(extractExternalUrls(fileContent));
-          processUrls(extractedUrls);
-        } else {
-          // If the asset file does not exist, check if it's an external URL directly
-          const extractedUrls = Array.from(extractExternalUrls(asset));
-          processUrls(extractedUrls);
-        }
-      } catch (error) {
-        console.error(`Error processing asset ${asset}:`, error);
+  const processUrls = (urls: string[]) => {
+    const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, this.allowedDomains, this.allowedUrls);
+    keptUrls.forEach(url => {
+      if (!processedUrls.has(url)) {
+        externalUrls.add(url);
+        processedUrls.add(url);
       }
+    });
+    filteredRemovedUrls.forEach(url => {
+      if (!processedUrls.has(url)) {
+        removedUrls.add(url);
+        processedUrls.add(url);
+      }
+    });
+  };
+
+  for (const asset of assets) {
+    const assetFullPath = path.join(baseDir, asset);
+    try {
+      if (await fileExists(assetFullPath)) {
+        const fileContent = await readJsonFile<string>(assetFullPath);
+        const extractedUrls = Array.from(extractExternalUrls(fileContent));
+        processUrls(extractedUrls);
+      } else {
+        const extractedUrls = Array.from(extractExternalUrls(asset));
+        processUrls(extractedUrls);
+      }
+    } catch (error) {
+      console.error(`Error processing asset ${asset}:`, error);
     }
   }
+}
 
   /**
    * Processes translation files to extract exempt URLs.
