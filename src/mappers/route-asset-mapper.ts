@@ -1,5 +1,4 @@
 import path from 'node:path'
-import fs from 'fs/promises'
 import { readJsonFile, writeJsonFile, ensureDirectoryExists, getAllFiles, waitForFile, directoryExists, fileExists } from '../utils/file-utils'
 import { extractExternalUrls, filterUrls } from '../utils/url-utils'
 import { RemixManifest, ClientManifest, RouteAssets } from '../interfaces'
@@ -65,10 +64,12 @@ export class RouteAssetMapper {
     await Promise.all(Array.from(assets).map(async (asset) => {
       const assetFullPath = path.join(__dirname, 'public', asset)
       if (await fileExists(assetFullPath)) {
-        const fileContent = await fs.readFile(assetFullPath, 'utf-8')
-        const { keptUrls, removedUrls: fileRemovedUrls } = filterUrls(new Set(extractExternalUrls(fileContent)), this.exemptUrls, this.allowedDomains, this.allowedUrls)
+        const fileContent = await readJsonFile<string>(assetFullPath)
+        const extractedUrls = new Set(extractExternalUrls(fileContent))
+        const { keptUrls, removedUrls } = filterUrls(extractedUrls, this.exemptUrls, this.allowedDomains)
+        
         keptUrls.forEach(url => externalUrls.add(url))
-        fileRemovedUrls.forEach(url => removedUrls.add(url))
+        removedUrls.forEach(url => removedUrls.add(url))
       }
     }))
   }
@@ -76,7 +77,7 @@ export class RouteAssetMapper {
   private async processTranslationFiles(dir: string) {
     const files = await getAllFiles(dir, '.json')
     await Promise.all(files.map(async (filePath) => {
-      const fileContent = await fs.readFile(filePath, 'utf-8')
+      const fileContent = await readJsonFile<string>(filePath)
       extractExternalUrls(fileContent).forEach(url => this.exemptUrls.add(url))
     }))
   }
