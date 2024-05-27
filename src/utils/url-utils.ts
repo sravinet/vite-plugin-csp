@@ -5,14 +5,13 @@
  * @returns {Set<string>} - A set of extracted external URLs.
  */
 export function extractExternalUrls(fileContent: string): Set<string> {
-    const urlPattern = /https?:\/\/[^\s'"]+/g;
-    const urls = new Set<string>();
-    let match: RegExpExecArray | null;
-    while ((match = urlPattern.exec(fileContent)) !== null) {
-      const url = new URL(match[0]);
-      urls.add(`${url.origin}${url.pathname}`);
-    }
-    return urls;
+  const urlPattern = /https?:\/\/[^\s'"]+/g;
+  const urls = new Set<string>();
+  let match: RegExpExecArray | null;
+  while ((match = urlPattern.exec(fileContent)) !== null) {
+    urls.add(match[0]);
+  }
+  return urls;
 }
 
 /**
@@ -31,7 +30,7 @@ export function filterUrls(urls: string[], allowedDomains: string[] = [], allowe
 
   urls.forEach(url => {
       const domain = new URL(url).hostname;
-      if (allowedUrlsSet.has(url) || Array.from(allowedDomainsSet).some(allowedDomain => domain === allowedDomain || domain.endsWith(`.${allowedDomain}`))) {
+      if (allowedUrlsSet.has(url) || allowedDomainsSet.has(domain)) {
           keptUrls.push(url);
       } else {
           removedUrls.push(url);

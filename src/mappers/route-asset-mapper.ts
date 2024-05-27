@@ -65,7 +65,7 @@ export class RouteAssetMapper {
       const externalUrls = new Set<string>()
       const removedUrls = new Set<string>()
 
-      this.collectAssets(routeValue.file, assets)
+      this.collectAssets(routeValue.file, assets, this.clientManifest)
       await this.processAssets(assets, externalUrls, removedUrls)
 
       routeAssets[routeKey] = {
@@ -85,18 +85,40 @@ export class RouteAssetMapper {
    * @param {Set<string>} removedUrls - The set of removed URLs.
    * @param {string} [baseDir=__dirname] - The base directory for constructing file paths.
    */
-  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = __dirname) {
-    await Promise.all(Array.from(assets).map(async (asset) => {
-      const assetFullPath = path.join(baseDir, asset)
-      if (await fileExists(assetFullPath)) {
-        const fileContent = await readJsonFile<string>(assetFullPath)
-        const extractedUrls = Array.from(extractExternalUrls(fileContent))
-        const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(extractedUrls, Array.from(this.exemptUrls), this.allowedDomains)
-        
-        keptUrls.forEach(url => externalUrls.add(url))
-        filteredRemovedUrls.forEach(url => removedUrls.add(url))
+  public async processAssets(assets: Set<string>, externalUrls: Set<string>, removedUrls: Set<string>, baseDir: string = this.clientJSDir) {    const processedUrls = new Set<string>();
+
+    const processUrls = (urls: string[]) => {
+      const { keptUrls, removedUrls: filteredRemovedUrls } = filterUrls(urls, Array.from(this.exemptUrls), this.allowedDomains);
+      keptUrls.forEach(url => {
+        if (!processedUrls.has(url)) {
+          externalUrls.add(url);
+          processedUrls.add(url);
+        }
+      });
+      filteredRemovedUrls.forEach(url => {
+        if (!processedUrls.has(url)) {
+          removedUrls.add(url);
+          processedUrls.add(url);
+        }
+      });
+    };
+
+    for (const asset of assets) {
+      const assetFullPath = path.join(baseDir, asset);
+      try {
+        if (await fileExists(assetFullPath)) {
+          const fileContent = await readJsonFile<string>(assetFullPath);
+          const extractedUrls = Array.from(extractExternalUrls(fileContent));
+          processUrls(extractedUrls);
+        } else {
+          // If the asset file does not exist, check if it's an external URL directly
+          const extractedUrls = Array.from(extractExternalUrls(asset));
+          processUrls(extractedUrls);
+        }
+      } catch (error) {
+        console.error(`Error processing asset ${asset}:`, error);
       }
-    }))
+    }
   }
 
   /**
@@ -117,9 +139,10 @@ export class RouteAssetMapper {
    * 
    * @param {string} routeFile - The route file for which assets need to be collected.
    * @param {Set<string>} assets - A set to store the collected assets.
+   * @param {ClientManifest} clientManifest - The client manifest containing asset information.
    * @param {Set<string>} [processed=new Set<string>()] - A set to keep track of already processed files to avoid circular dependencies.
    */
-  public collectAssets(routeFile: string, assets: Set<string>, processed: Set<string> = new Set<string>()) {
+  public collectAssets(routeFile: string, assets: Set<string>, clientManifest: ClientManifest, processed: Set<string> = new Set<string>()) {
     // If the route file has already been processed, return to avoid reprocessing.
     if (processed.has(routeFile)) return;
     
@@ -127,7 +150,7 @@ export class RouteAssetMapper {
     processed.add(routeFile);
 
     // Iterate over all assets in the client manifest.
-    for (const asset of Object.values(this.clientManifest)) {
+    for (const asset of Object.values(clientManifest)) {
       // Check if the asset's source matches the route file or if the asset imports the route file.
       if (asset.src === routeFile || asset.imports?.includes(routeFile)) {
         // Add the asset file to the set of collected assets.
@@ -135,7 +158,9 @@ export class RouteAssetMapper {
         
         // If the asset has imports, recursively collect assets for each imported file.
         if (asset.imports) {
-          asset.imports.forEach(imported => this.collectAssets(imported, assets, processed));
+          asset.imports.forEach(importedFile => {
+            this.collectAssets(importedFile, assets, clientManifest, processed);
+          });
         }
       }
     }

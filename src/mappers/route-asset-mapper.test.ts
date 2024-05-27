@@ -60,11 +60,9 @@ describe('RouteAssetMapper', () => {
   
     mockDirectoryExists.mockResolvedValue(false);
     mockFileExists.mockImplementation((filePath) => {
-      // Mock file existence based on the expected file paths
       return Promise.resolve(filePath.includes('file1.js') || filePath.includes('file2.js'));
     });
     mockReadJsonFile.mockImplementation((filePath) => {
-      // Mock reading JSON file content based on the expected file paths
       if (filePath.includes('file1.js')) {
         return Promise.resolve({ url: 'https://external.com/script.js' });
       }
@@ -95,7 +93,7 @@ describe('RouteAssetMapper', () => {
 
   it('should collect assets for a given route file', () => {
     const assets = new Set<string>()
-    routeAssetMapper.collectAssets('file1.js', assets)
+    routeAssetMapper.collectAssets('file1.js', assets, mockClientManifest)
 
     expect(assets).toContain('file1.js')
     expect(assets).toContain('file2.js')
@@ -117,7 +115,7 @@ describe('RouteAssetMapper', () => {
     })
 
     const assets = new Set<string>()
-    routeAssetMapper.collectAssets('file1.js', assets)
+    routeAssetMapper.collectAssets('file1.js', assets, circularClientManifest)
 
     expect(assets).toContain('file1.js')
     expect(assets).toContain('file2.js')
@@ -128,7 +126,7 @@ describe('RouteAssetMapper', () => {
     const processed = new Set<string>()
     processed.add('file2.js')
 
-    routeAssetMapper.collectAssets('file1.js', assets, processed)
+    routeAssetMapper.collectAssets('file1.js', assets, mockClientManifest, processed)
 
     expect(assets).toContain('file1.js')
     expect(assets).not.toContain('file2.js')
@@ -136,7 +134,7 @@ describe('RouteAssetMapper', () => {
 
   it('should handle non-existent route files gracefully', () => {
     const assets = new Set<string>()
-    routeAssetMapper.collectAssets('non-existent.js', assets)
+    routeAssetMapper.collectAssets('non-existent.js', assets, mockClientManifest)
 
     expect(assets.size).toBe(0)
   })
@@ -156,79 +154,9 @@ describe('RouteAssetMapper', () => {
     })
 
     const assets = new Set<string>()
-    routeAssetMapper.collectAssets('file1.js', assets)
+    routeAssetMapper.collectAssets('file1.js', assets, emptyImportsClientManifest)
 
     expect(assets).toContain('file1.js')
     expect(assets.size).toBe(1)
   })
-
-  it('should collect assets for a given route file', () => {
-    const assets = new Set<string>()
-    routeAssetMapper.collectAssets('file1.js', assets)
-
-    expect(assets).toContain('file1.js')
-    expect(assets).toContain('file2.js')
-  })
-  
-  
-  it('should handle circular dependencies gracefully', () => {
-      const circularClientManifest: ClientManifest = {
-        'file1.js': { src: 'file1.js', file: 'file1.js', imports: ['file2.js'] },
-        'file2.js': { src: 'file2.js', file: 'file2.js', imports: ['file1.js'] }
-      }
-  
-      routeAssetMapper = new RouteAssetMapper({
-        remixManifest: mockRemixManifest,
-        clientManifest: circularClientManifest,
-        translationDir: 'translations',
-        clientJSDir: 'client-js',
-        allowedDomains: ['example.com'],
-        allowedUrls: ['https://example.com']
-      })
-  
-      const assets = new Set<string>()
-      routeAssetMapper.collectAssets('file1.js', assets)
-  
-      expect(assets).toContain('file1.js')
-      expect(assets).toContain('file2.js')
-    })
-  
-    it('should not reprocess already processed files', () => {
-      const assets = new Set<string>()
-      const processed = new Set<string>()
-      processed.add('file2.js')
-  
-      routeAssetMapper.collectAssets('file1.js', assets, processed)
-  
-      expect(assets).toContain('file1.js')
-      expect(assets).not.toContain('file2.js')
-    })
-  
-    it('should handle non-existent route files gracefully', () => {
-      const assets = new Set<string>()
-      routeAssetMapper.collectAssets('non-existent.js', assets)
-  
-      expect(assets.size).toBe(0)
-    })
-  
-    it('should handle empty imports gracefully', () => {
-      const emptyImportsClientManifest: ClientManifest = {
-        'file1.js': { src: 'file1.js', file: 'file1.js', imports: [] }
-      }
-  
-      routeAssetMapper = new RouteAssetMapper({
-        remixManifest: mockRemixManifest,
-        clientManifest: emptyImportsClientManifest,
-        translationDir: 'translations',
-        clientJSDir: 'client-js',
-        allowedDomains: ['example.com'],
-        allowedUrls: ['https://example.com']
-      })
-  
-      const assets = new Set<string>()
-      routeAssetMapper.collectAssets('file1.js', assets)
-  
-      expect(assets).toContain('file1.js')
-      expect(assets.size).toBe(1)
-    })
-  })
+})
