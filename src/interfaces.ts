@@ -11,3 +11,9 @@ export interface RouteAssets {
   externalUrls: Set<string>
   removedUrls: Set<string>
 }
+
+/**
+ * Type representing the structure of translation JSON files.
+ */
+export type TranslationJson = Record<string, string>
+
