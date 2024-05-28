@@ -9,7 +9,9 @@
 	"scripts": {
 		"build": "tsup src/index.mts --format cjs,esm --dts",
 		"xxtest:cucumber": "cucumber-js -p default -r ts-node/register/transpile-only --config cucumber.mjs",
-		"test:cucumber": "cucumber-js -p default",
+		"Wtest:cucumber": "cucumber-js -p default -r ts-node/register",
+		"test:cucumber": "cucumber-js -p default -r ts-node/esm",
+
 		"test": "vitest"
 	},
 	"keywords": [
