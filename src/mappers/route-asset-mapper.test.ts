@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest'
-import { RouteAssetMapper } from './route-asset-mapper'
-import { RemixManifest, ClientManifest } from '../interfaces'
-import { directoryExists, fileExists, getAllFiles, readJsonFile } from '../utils/file-utils'
+import { RouteAssetMapper } from './route-asset-mapper.ts'
+import { RemixManifest, ClientManifest } from '../interfaces.ts'
+import { directoryExists, fileExists, getAllFiles, readJsonFile } from '../utils/file-utils.ts'
 
 // Mock the utility functions
 vi.mock('../utils/file-utils', () => ({

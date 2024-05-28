@@ -9,7 +9,7 @@ import {
   waitForFile,
   directoryExists,
   fileExists
-} from './file-utils';
+} from './file-utils.ts';
 
 vi.mock('fs/promises');
 

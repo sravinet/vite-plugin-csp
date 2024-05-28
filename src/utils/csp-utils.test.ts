@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateCspHeader } from './csp-utils';
+import { generateCspHeader } from './csp-utils.ts';
 
 describe('generateCspHeader', () => {
   it('should generate a CSP header with default values', () => {

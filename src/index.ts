@@ -1,10 +1,10 @@
 import { Plugin } from 'vite'
 import path from 'node:path'
-import fs from 'fs/promises'
-import { readJsonFile, writeJsonFile, ensureDirectoryExists, waitForFile } from './utils/file-utils'
-import { generateCspHeader } from './utils/csp-utils'
-import { RemixManifest, ClientManifest } from './interfaces'
-import RouteAssetMapper from './mappers/route-asset-mapper'
+
+import { readJsonFile, writeJsonFile, ensureDirectoryExists, waitForFile } from './utils/file-utils.ts'
+import { generateCspHeader } from './utils/csp-utils.ts'
+import { RemixManifest, ClientManifest } from './interfaces.ts'
+import RouteAssetMapper from './mappers/route-asset-mapper.ts'
 
 function parseOptions(options: {
   remixManifestPath: string

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractExternalUrls, filterUrls } from './url-utils';
+import { extractExternalUrls, filterUrls } from './url-utils.ts';
 
 describe('extractExternalUrls', () => {
     it('should extract external URLs from file content', () => {

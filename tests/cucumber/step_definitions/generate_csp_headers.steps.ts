@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import { expect } from 'vitest';
-import { generateCspHeader } from '../../../src/utils/csp-utils.js';
+import { generateCspHeader } from '../../../src/utils/csp-utils.ts';
 
 let assets: string[] = [];
 let externalUrls: Set<string> = new Set<string>();

@@ -1,7 +1,7 @@
 import path from 'node:path'
-import { readJsonFile, writeJsonFile, ensureDirectoryExists, getAllFiles, waitForFile, directoryExists, fileExists } from '../utils/file-utils'
-import { extractExternalUrls, filterUrls } from '../utils/url-utils'
-import { RemixManifest, ClientManifest, RouteAssets, TranslationJson } from '../interfaces'
+import { readJsonFile, writeJsonFile, ensureDirectoryExists, getAllFiles, waitForFile, directoryExists, fileExists } from '../utils/file-utils.ts'
+import { extractExternalUrls, filterUrls } from '../utils/url-utils.ts'
+import { RemixManifest, ClientManifest, RouteAssets, TranslationJson } from '../interfaces.ts'
 
 /**
  * Class representing a mapper for route assets.
