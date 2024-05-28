@@ -15,8 +15,9 @@
     "noEmit": true,
     "strict": true,
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "tests/cucumber/**/*.ts", "src/**/*.mts"]
+  "include": ["src/**/*.ts", "tests/cucumber/**/*.ts", "src/**/*.mts"],
+  "exclude": ["node_modules"]
 }
-
