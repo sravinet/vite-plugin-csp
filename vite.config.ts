@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vite';
+import { defineConfig, preview } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
@@ -9,6 +9,6 @@ export default defineConfig({
     },
     test: {
         globals: true,
-        environment: 'jsdom',
-    },
+	},
 });
+
