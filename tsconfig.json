@@ -13,6 +13,7 @@
     "emitDecoratorMetadata": true,
     "allowSyntheticDefaultImports": true,
     "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
