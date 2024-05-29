@@ -21,6 +21,9 @@ importers:
       '@cucumber/cucumber':
         specifier: ^10.8.0
         version: 10.8.0
+      '@cucumber/pretty-formatter':
+        specifier: ^1.0.1
+        version: 1.0.1(@cucumber/cucumber@10.8.0)(@cucumber/messages@24.1.0)
       '@types/cucumber':
         specifier: ^7.0.0
         version: 7.0.0
@@ -109,6 +112,12 @@ packages:
 
   '@cucumber/messages@24.1.0':
     resolution: {integrity: sha512-hxVHiBurORcobhVk80I9+JkaKaNXkW6YwGOEFIh/2aO+apAN+5XJgUUWjng9NwqaQrW1sCFuawLB1AuzmBaNdQ==}
+
+  '@cucumber/pretty-formatter@1.0.1':
+    resolution: {integrity: sha512-A1lU4VVP0aUWdOTmpdzvXOyEYuPtBDI0xYwYJnmoMDplzxMdhcHk86lyyvYDoMoPzzq6OkOE3isuosvUU4X7IQ==}
+    peerDependencies:
+      '@cucumber/cucumber': '>=7.0.0'
+      '@cucumber/messages': '*'
 
   '@cucumber/tag-expressions@6.1.0':
     resolution: {integrity: sha512-+3DwRumrCJG27AtzCIL37A/X+A/gSfxOPLg8pZaruh5SLumsTmpvilwroVWBT2fPzmno/tGXypeK5a7NHU4RzA==}
@@ -1518,6 +1527,10 @@ packages:
     resolution: {integrity: sha512-L0Orpi8qGpRG//Nd+H90vFB+3iHnue1zSSGmNOOCh1GLJ7rUKVwV2HvijphGQS2UmhUZewS9VgvxYIdgr+fG1A==}
     hasBin: true
 
+  ts-dedent@2.2.0:
+    resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
+    engines: {node: '>=6.10'}
+
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
 
@@ -1889,6 +1902,15 @@ snapshots:
       class-transformer: 0.5.1
       reflect-metadata: 0.2.1
       uuid: 9.0.1
+
+  '@cucumber/pretty-formatter@1.0.1(@cucumber/cucumber@10.8.0)(@cucumber/messages@24.1.0)':
+    dependencies:
+      '@cucumber/cucumber': 10.8.0
+      '@cucumber/messages': 24.1.0
+      ansi-styles: 5.2.0
+      cli-table3: 0.6.3
+      figures: 3.2.0
+      ts-dedent: 2.2.0
 
   '@cucumber/tag-expressions@6.1.0': {}
 
@@ -3131,6 +3153,8 @@ snapshots:
       punycode: 2.3.1
 
   tree-kill@1.2.2: {}
+
+  ts-dedent@2.2.0: {}
 
   ts-interface-checker@0.1.13: {}
 

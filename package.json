@@ -23,6 +23,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@cucumber/cucumber": "^10.8.0",
+		"@cucumber/pretty-formatter": "^1.0.1",
 		"@types/cucumber": "^7.0.0",
 		"@types/node": "^20.12.12",
 		"jsdom": "^24.1.0",
