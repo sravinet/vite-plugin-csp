@@ -1,17 +1,24 @@
 {
 	"name": "vite-plugin-csp",
 	"version": "1.0.0",
-	"description": "A Vite plugin for ...",
+	"description": "A Vite plugin for generating CSP header JSONs during build",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/sravinet/vite-plugin-csp.git"
+	},
 	"main": "dist/index.js",
 	"module": "dist/index.mjs",
 	"types": "dist/index.d.ts",
 	"type": "module",
 	"scripts": {
-		"build": "tsup src/index.mts --format cjs,esm --dts",
+		"build": "tsup src/index.ts --format cjs,esm --dts",
 		"xtest:cucumber": "cucumber-js --require-module ts-node/register --loader ts-node/esm",
 		"test:cucumber": "tsx cucumber-js --import 'tests/cucumber/step_definitions/**/*.ts' 'tests/cucumber/features/**/*.feature'",
 		"test": "vitest",
-		"typecheck": "pnpm tsc --noEmit"
+		"typecheck": "pnpm tsc --noEmit",
+		"bundle": "tsx scripts/bundle.ts",
+		"release": "tsx scripts/release.ts",
+		"publish": "tsx scripts/publish.ts"
 	},
 	"keywords": [
 		"vite",
@@ -23,6 +30,7 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^20.12.12",
+		"esbuild": "^0.21.4",
 		"jsdom": "^24.1.0",
 		"ts-node": "^10.9.2",
 		"tsup": "^8.0.2",
@@ -32,9 +40,13 @@
 		"vitest": "^1.6.0"
 	},
 	"dependencies": {
+		"@vitejs/release-scripts": "^1.3.1",
 		"class-validator": "^0.14.1",
 		"fs": "0.0.1-security",
 		"vite": "^5.2.12"
+	},
+	"peerDependencies": {
+		"vite": "^4 || ^5"
 	},
 	"volta": {
 		"node": "22.2.0",
