@@ -24,9 +24,6 @@ importers:
       '@cucumber/pretty-formatter':
         specifier: ^1.0.1
         version: 1.0.1(@cucumber/cucumber@10.8.0)(@cucumber/messages@24.1.0)
-      '@types/cucumber':
-        specifier: ^7.0.0
-        version: 7.0.0
       '@types/node':
         specifier: ^20.12.12
         version: 20.12.12
@@ -541,10 +538,6 @@ packages:
 
   '@tsconfig/node16@1.0.4':
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
-
-  '@types/cucumber@7.0.0':
-    resolution: {integrity: sha512-cr5NN8/jmbw3vDKTQfGW0cSzDtkvxixu9bUD6po9U6OEF04XLuukTDldFG34ccDscLkA8bYnZ7VjxP79cIC7tg==}
-    deprecated: This is a stub types definition. @cucumber/cucumber provides its own type definitions, so you do not need this installed.
 
   '@types/estree@1.0.5':
     resolution: {integrity: sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==}
@@ -2161,10 +2154,6 @@ snapshots:
   '@tsconfig/node14@1.0.3': {}
 
   '@tsconfig/node16@1.0.4': {}
-
-  '@types/cucumber@7.0.0':
-    dependencies:
-      '@cucumber/cucumber': 10.8.0
 
   '@types/estree@1.0.5': {}
 
