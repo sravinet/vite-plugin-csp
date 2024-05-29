@@ -3,7 +3,8 @@
     "target": "ES2020",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "types": ["node", "vitest"],
+    "types": ["node", "vitest", "@cucumber/cucumber"],
+    "typeRoots": ["node_modules/@types"],
     "outDir": "./dist",
     "declaration": true,
     "declarationDir": "./dist",
@@ -18,6 +19,6 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts", "tests/cucumber/**/*.ts", "src/**/*.mts"],
+  "include": ["src/**/*.ts", "tests/cucumber/**/*.ts", "src/**/*.mts", "tests/cucumber/step_definitions/generate_csp_headers.steps.ts"],
   "exclude": ["node_modules"]
 }

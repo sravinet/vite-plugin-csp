@@ -4,10 +4,9 @@ import { generateCspHeader } from '../../../src/utils/csp-utils.ts';
 
 let assets: string[] = [];
 let externalUrls: Set<string> = new Set<string>();
-let cspHeader: string;
+let cspHeader: string = '';
 
 console.log("Step definitions loaded");
-
 
 Given('the following assets:', (dataTable: { rawTable: string[][] }) => {
   assets = dataTable.rawTable.slice(1).map((row: string[]) => row[0]);
